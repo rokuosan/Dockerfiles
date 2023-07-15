@@ -1,0 +1,18 @@
+networks:
+  proxy:
+    name: proxy_network
+    external: true
+
+services:
+  portainer:
+    image: portainer/portainer-ce
+    privileged: true
+    volumes:
+      - './data:/data'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    restart: unless-stopped
+    networks:
+      - proxy
+    ports:
+      - '9000:9000'
+      - '9443:9443'
