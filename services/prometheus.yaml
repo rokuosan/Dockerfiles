@@ -1,0 +1,38 @@
+version: '3'
+
+networks:
+  internal:
+  proxy:
+    name: proxy_network
+    external: true
+
+volumes:
+  prometheus_data:
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./data:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    restart: always
+    networks:
+      - internal
+      - proxy
+    expose:
+      - '9090'
+  snmp:
+    image: prom/snmp-exporter
+    container_name: snmp_exporter
+    volumes:
+      - './snmp/snmp.yml:/etc/snmp_exporter/snmp.yml'
+    expose:
+      - "9116"
+    networks:
+    - internal
